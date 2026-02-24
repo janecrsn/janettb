@@ -32,11 +32,15 @@
     async function main() {
       await liff.init({ liffId: LIFF_ID });
 
-      if (!liff.isLoggedIn()) {
-        liff.login();
+      // ถ้าไม่ได้เปิดจาก LINE app ให้ redirect ไปเปิดใน LINE app เลย
+      if (!liff.isInClient()) {
+        // เด้งไปที่ LINE app โดยส่ง URL ของหน้านี้
+        const currentUrl = window.location.href;
+        window.location.href = `https://line.me/R/web/${encodeURIComponent(currentUrl)}`;
         return;
       }
 
+      // ถ้าเปิดจาก LINE app อยู่แล้ว ให้ดำเนินการตามปกติ
       const profile = await liff.getProfile();
       document.getElementById("status").innerText = "Ready ✅";
       document.getElementById("profileBox").style.display = "block";
@@ -53,9 +57,7 @@
       alert("Sent!");
     }
 
-    // วิธีชัวร์: เปิดลิงก์เพิ่มเพื่อน OA ด้วยมือ
     function addFriend() {
-      // เปลี่ยน @xxxx เป็น LINE OA ของคุณ
       const oaLink = "https://line.me/R/ti/p/@748svdvs";
       liff.openWindow({ url: oaLink, external: true });
     }
